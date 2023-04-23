@@ -1,5 +1,5 @@
 export function sendEvent({ tag, type, element, appId }) {
-    fetch("http://localhost:3000/api", {
+    fetch("http://localhost:3000/kpi", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
