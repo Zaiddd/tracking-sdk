@@ -1,4 +1,5 @@
-export function sendEvent({ tag, type, element, appId }) {
+// Envoi des données à la base MongoDB à chaque action
+export function sendEvent({tag, type, element, appId, createdAt, content}) {
     fetch("http://localhost:3000/kpi", {
         method: "POST",
         headers: {
@@ -10,7 +11,8 @@ export function sendEvent({ tag, type, element, appId }) {
             event: type,
             id_visitor: getVisitorId(),
             id_visit: getVisitId(),
-            content: element.outerHTML,
+            content: content,
+            createdAt: createdAt
         }),
     }).then((r) => {
         console.log(
@@ -34,6 +36,7 @@ export const trackElement = (appId, el, tag, type) => {
     };
 };
 
+// Liste des évènements
 const eventListeners = {};
 
 /**
@@ -44,52 +47,67 @@ const eventListeners = {};
 
 export default {
     install(app, options) {
-        const { AppId } = options;
-        app.directive("click-track", {
+        const {AppId} = options;
+        let currentEventType = "";
+        let startTime = new Date();
+
+        // Directive dynamique pouvant prendre plusieurs évènements (click, mouseover, ..) en précisant l'event en tant qu'argument sur un élément HTML
+        app.directive("track", {
             mounted(el, binding) {
-                // eventListeners[binding.value] = trackElement(el, binding.tag, binding.type);
+                currentEventType = binding.arg;
                 const handleEvent = () => {
+                    currentEventType = binding.arg;
                     sendEvent({
                         tag: binding.value,
-                        type: "click",
+                        type: currentEventType,
                         element: el,
-                        appId: AppId
+                        appId: AppId,
+                        content: el.outerHTML,
+                        createdAt: Date.now()
                     });
                 };
                 eventListeners[binding.value] = handleEvent;
-                el.addEventListener("click", eventListeners[binding.value]);
+                el.addEventListener(currentEventType, eventListeners[binding.value]);
             },
             unmounted(el, binding) {
-                el.removeEventListener("click", eventListeners[binding.value]);
+                el.removeEventListener(currentEventType, eventListeners[binding.value]);
             },
         });
 
-        app.directive("mouseover-track", {
+        // Détection du temps passé sur une page
+        app.directive('time-track', {
             mounted(el, binding) {
-                // eventListeners[binding.value] = trackElement(el, binding.tag, binding.type);
                 const handleEvent = () => {
+                    let endDate = new Date();
                     sendEvent({
                         tag: binding.value,
-                        type: "mouseover",
+                        type: "time",
                         element: el,
-                        appId: AppId
+                        appId: AppId,
+                        content: Math.abs(startTime - endDate) / 1000,
+                        createdAt: Date.now()
                     });
+                    startTime = null;
                 };
+
                 eventListeners[binding.value] = handleEvent;
-                el.addEventListener("mouseover", eventListeners[binding.value]);
+                window.addEventListener("beforeunload", eventListeners[binding.value]);
             },
+
             unmounted(el, binding) {
-                el.removeEventListener("mouseover", eventListeners[binding.value]);
-            },
+                window.removeEventListener("beforeunload", eventListeners[binding.value]);
+            }
         });
     },
 };
 
+// Gestion des ID visiteur lorsque celui-ci quitte la page
 window.addEventListener("beforeunload", function (event) {
     localStorage.removeItem("visitId");
     deleteCookie("visitId");
 });
 
+// Récupération du VISIT_ID / Création s'il n'existe pas
 function getVisitId() {
     const visitId =
         localStorage.getItem("visitId") || getCookie("visitId");
@@ -104,6 +122,7 @@ function getVisitId() {
     return newVisitId;
 }
 
+// Récupération du VISITOR_ID / Création s'il n'existe pas
 function getVisitorId() {
     const visitorId =
         localStorage.getItem("visitorId") || getCookie("visitorId");
@@ -118,6 +137,7 @@ function getVisitorId() {
     return newVisitorId;
 }
 
+// Création d'un cookie
 function setCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -128,6 +148,7 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
+// Récupération d'un cookie
 function getCookie(name) {
     const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
@@ -139,10 +160,12 @@ function getCookie(name) {
     return null;
 }
 
+// Suppression d'un cookie
 function deleteCookie(name) {
     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 }
 
+// Création d'un ID pour VISIT_ID et VISITOR_ID
 function createUniqueId() {
     return (
         Date.now().toString(36) +
