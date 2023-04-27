@@ -4,20 +4,17 @@ import TheWelcome from './components/TheWelcome.vue'
 </script>
 
 <template>
-    <div v-time-track="'TIME_TAGGGGGGGGGGGG'">
-        <header>
-            <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125"
-                 v-track:click="'UNTAG'"/>
+    <header>
+        <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" v-track:click="'UNTAG'"/>
 
-            <div class="wrapper" v-track:mouseover="'TAG_MOUSEOVER'">
-                <HelloWorld msg="You did it!"/>
-            </div>
-        </header>
+        <div class="wrapper" v-track:mouseover="'TAG_MOUSEOVER'">
+            <HelloWorld msg="You did it!"/>
+        </div>
+    </header>
 
-        <main>
-            <TheWelcome/>
-        </main>
-    </div>
+    <main>
+        <TheWelcome/>
+    </main>
 </template>
 
 <style scoped>

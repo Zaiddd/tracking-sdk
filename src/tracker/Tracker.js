@@ -21,6 +21,48 @@ export function sendEvent({tag, type, element, appId, createdAt, content}) {
     });
 }
 
+export function saveUniqueUser(id_visitor) {
+    fetch("http://localhost:3000/visitor", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            id_visitor: id_visitor,
+            createdAt: new Date()
+        }),
+    });
+}
+
+export function saveVisit(id_visit) {
+    fetch("http://localhost:3000/visit", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            id_visit: id_visit,
+            createdAt: new Date()
+        }),
+    });
+}
+
+export function saveDurationTime(id_visit, id_visitor, totalSeconds) {
+    fetch("http://localhost:3000/time", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            id_visit: id_visit,
+            id_visitor: id_visit,
+            seconds: totalSeconds,
+            page: window.location.href,
+            createdAt: new Date()
+        }),
+    });
+}
+
 export const trackElement = (appId, el, tag, type) => {
     const handleEvent = () => {
         sendEvent({
@@ -38,18 +80,13 @@ export const trackElement = (appId, el, tag, type) => {
 
 // Liste des évènements
 const eventListeners = {};
-
-/**
- *
- * const ref = useTrack("my-tag", "click");
- *
- */
+let startTime = null;
+let endTime = null;
 
 export default {
     install(app, options) {
         const {AppId} = options;
         let currentEventType = "";
-        let startTime = new Date();
 
         // Directive dynamique pouvant prendre plusieurs évènements (click, mouseover, ..) en précisant l'event en tant qu'argument sur un élément HTML
         app.directive("track", {
@@ -73,38 +110,24 @@ export default {
                 el.removeEventListener(currentEventType, eventListeners[binding.value]);
             },
         });
-
-        // Détection du temps passé sur une page
-        app.directive('time-track', {
-            mounted(el, binding) {
-                const handleEvent = () => {
-                    let endDate = new Date();
-                    sendEvent({
-                        tag: binding.value,
-                        type: "time",
-                        element: el,
-                        appId: AppId,
-                        content: Math.abs(startTime - endDate) / 1000,
-                        createdAt: Date.now()
-                    });
-                    startTime = null;
-                };
-
-                eventListeners[binding.value] = handleEvent;
-                window.addEventListener("beforeunload", eventListeners[binding.value]);
-            },
-
-            unmounted(el, binding) {
-                window.removeEventListener("beforeunload", eventListeners[binding.value]);
-            }
-        });
     },
 };
+
+window.addEventListener("load", function (event) {
+    startTime = new Date();
+    saveUniqueUser(getVisitorId());
+    saveVisit(getVisitId());
+});
 
 // Gestion des ID visiteur lorsque celui-ci quitte la page
 window.addEventListener("beforeunload", function (event) {
     localStorage.removeItem("visitId");
     deleteCookie("visitId");
+    endTime = new Date();
+
+    // Sauvegarde de la durée de visite
+    let totalSeconds = Math.abs(startTime - endTime) / 1000;
+    saveDurationTime(getVisitId(), getVisitorId(), totalSeconds)
 });
 
 // Récupération du VISIT_ID / Création s'il n'existe pas
