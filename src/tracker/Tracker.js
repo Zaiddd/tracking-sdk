@@ -97,6 +97,7 @@ export default {
         const {AppId} = options;
         app_id = AppId;
         let currentEventType = "";
+        let content = "";
 
         // Directive dynamique pouvant prendre plusieurs évènements (click, mouseover, ..) en précisant l'event en tant qu'argument sur un élément HTML
         app.directive("track", {
@@ -104,12 +105,23 @@ export default {
                 currentEventType = binding.arg;
                 const handleEvent = () => {
                     currentEventType = binding.arg;
+                    console.log(el.nodeName);
+                    if (el.nodeName == "IMG") {
+                        content = el.src;
+                    }
+                    else if (el.nodeName == "BUTTON") {
+                        content = "Button '" + el.innerText + "'";
+                    }
+                    else {
+                        content = el.innerText;
+                    }
+
                     sendEvent({
                         tag: binding.value,
                         type: currentEventType,
                         element: el,
                         appId: app_id,
-                        content: el.outerHTML,
+                        content: content,
                         createdAt: Date.now()
                     });
                 };

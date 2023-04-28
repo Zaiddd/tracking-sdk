@@ -10,6 +10,8 @@ import TheWelcome from './components/TheWelcome.vue'
         <div class="wrapper" v-track:mouseover="'TAG_MOUSEOVER'">
             <HelloWorld msg="You did it!"/>
         </div>
+
+        <button class="btn" v-track:click="'BTN_TAG'">Click me</button>
     </header>
 
     <main>
