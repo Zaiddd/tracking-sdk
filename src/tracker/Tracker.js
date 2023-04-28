@@ -47,6 +47,7 @@ export function saveVisit(id_visit) {
         body: JSON.stringify({
             app_id: app_id,
             id_visit: id_visit,
+            page: window.location.href,
             createdAt: new Date()
         }),
     });
