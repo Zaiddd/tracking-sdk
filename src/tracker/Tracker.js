@@ -1,5 +1,5 @@
 // Envoi des données à la base MongoDB à chaque action
-export function sendEvent({tag, type, element, appId, createdAt, content}) {
+export function sendEvent({tag, type, appId, createdAt, content}) {
     fetch("http://localhost:3000/kpi", {
         method: "POST",
         headers: {
@@ -7,6 +7,7 @@ export function sendEvent({tag, type, element, appId, createdAt, content}) {
             "App-Id": appId,
         },
         body: JSON.stringify({
+            app_id: appId,
             tag: tag,
             event: type,
             id_visitor: getVisitorId(),
@@ -26,8 +27,10 @@ export function saveUniqueUser(id_visitor) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "App-Id": app_id,
         },
         body: JSON.stringify({
+            app_id: app_id,
             id_visitor: id_visitor,
             createdAt: new Date()
         }),
@@ -39,8 +42,10 @@ export function saveVisit(id_visit) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "App-Id": app_id,
         },
         body: JSON.stringify({
+            app_id: app_id,
             id_visit: id_visit,
             createdAt: new Date()
         }),
@@ -52,8 +57,10 @@ export function saveDurationTime(id_visit, id_visitor, totalSeconds) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "App-Id": app_id,
         },
         body: JSON.stringify({
+            app_id: app_id,
             id_visit: id_visit,
             id_visitor: id_visit,
             seconds: totalSeconds,
@@ -82,10 +89,12 @@ export const trackElement = (appId, el, tag, type) => {
 const eventListeners = {};
 let startTime = null;
 let endTime = null;
+let app_id = null;
 
 export default {
     install(app, options) {
         const {AppId} = options;
+        app_id = AppId;
         let currentEventType = "";
 
         // Directive dynamique pouvant prendre plusieurs évènements (click, mouseover, ..) en précisant l'event en tant qu'argument sur un élément HTML
@@ -98,7 +107,7 @@ export default {
                         tag: binding.value,
                         type: currentEventType,
                         element: el,
-                        appId: AppId,
+                        appId: app_id,
                         content: el.outerHTML,
                         createdAt: Date.now()
                     });
