@@ -108,11 +108,9 @@ export default {
                     console.log(el.nodeName);
                     if (el.nodeName == "IMG") {
                         content = el.src;
-                    }
-                    else if (el.nodeName == "BUTTON") {
+                    } else if (el.nodeName == "BUTTON") {
                         content = "Button '" + el.innerText + "'";
-                    }
-                    else {
+                    } else {
                         content = el.innerText;
                     }
 
@@ -139,6 +137,7 @@ window.addEventListener("load", function (event) {
     startTime = new Date();
     saveUniqueUser(getVisitorId());
     saveVisit(getVisitId());
+    saveUsedBrowser();
 });
 
 // Gestion des ID visiteur lorsque celui-ci quitte la page
@@ -218,4 +217,38 @@ function createUniqueId() {
             36
         )
     );
+}
+
+function saveUsedBrowser() {
+
+    let userAgent = navigator.userAgent;
+    let browserName;
+
+    if (userAgent.match(/chrome|chromium|crios/i)) {
+        browserName = "chrome";
+    } else if (userAgent.match(/firefox|fxios/i)) {
+        browserName = "firefox";
+    } else if (userAgent.match(/safari/i)) {
+        browserName = "safari";
+    } else if (userAgent.match(/opr\//i)) {
+        browserName = "opera";
+    } else if (userAgent.match(/edg/i)) {
+        browserName = "edge";
+    } else {
+        browserName = "other/unknown";
+    }
+
+    fetch("http://localhost:3000/browser", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "App-Id": app_id,
+        },
+        body: JSON.stringify({
+            app_id: app_id,
+            browser: browserName,
+            id_visitor: getVisitorId(),
+            createdAt: new Date()
+        }),
+    });
 }
