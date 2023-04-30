@@ -105,7 +105,6 @@ export default {
                 currentEventType = binding.arg;
                 const handleEvent = () => {
                     currentEventType = binding.arg;
-                    console.log(el.nodeName);
                     if (el.nodeName == "IMG") {
                         content = el.src;
                     } else if (el.nodeName == "BUTTON") {
@@ -138,6 +137,7 @@ window.addEventListener("load", function (event) {
     saveUniqueUser(getVisitorId());
     saveVisit(getVisitId());
     saveUsedBrowser();
+    saveDevice();
 });
 
 // Gestion des ID visiteur lorsque celui-ci quitte la page
@@ -247,6 +247,31 @@ function saveUsedBrowser() {
         body: JSON.stringify({
             app_id: app_id,
             browser: browserName,
+            id_visitor: getVisitorId(),
+            createdAt: new Date()
+        }),
+    });
+}
+
+function saveDevice() {
+    const ua = navigator.userAgent;
+    let device = "desktop";
+    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+        device = "tablet";
+    }
+    if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+        device = "mobile";
+    }
+
+    fetch("http://localhost:3000/device", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "App-Id": app_id,
+        },
+        body: JSON.stringify({
+            app_id: app_id,
+            device: device,
             id_visitor: getVisitorId(),
             createdAt: new Date()
         }),
