@@ -26,6 +26,9 @@ npm run build
 - Install the Tracker in your project
 - Add the following lines in your main.js file :
     ```js
+    // Path to Tracker.js
+    import Tracker from "./tracker/Tracker";
+  
     app.use(Tracker, {
         AppId: "YOUR_APPLICATION_ID",
     });
