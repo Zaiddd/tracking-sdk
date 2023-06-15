@@ -88,7 +88,33 @@ app.post('/browser', (req, res) => {
     });
 });
 
-
+// Save IP Address endpoint
+app.post('/ip', (req, res) => {
+    const app_id = req.headers['app-id'];
+    const id_visitor = req.body.id_visitor;
+    const createdAt = req.body.createdAt;
+  
+    const clientIp = requestIp.getClientIp(req);
+  
+    const requestBody = {
+      app_id: app_id,
+      id_visitor: id_visitor,
+      createdAt: createdAt,
+      ipAddress: clientIp, // Add IP Address to the request body
+    };
+  
+    // Forward the request to kpi platform
+    axios
+    .post('http://localhost:3000/device', requestBody)
+    .then((response) => {
+      // Handle the response from the other backend
+      res.json(response.data);
+    })
+    .catch((error) => {
+      // Handle any errors that occurred during the request
+      res.status(500).json({ error: 'An error occurred' });
+    });
+  });
   
 
 
