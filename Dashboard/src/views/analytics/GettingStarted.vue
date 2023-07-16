@@ -22,6 +22,19 @@
 
           <h2 class="text-xl font-bold mb-2">Install</h2>
           <ul class="list-disc list-inside mb-4">
+            <li>Download the Middle <a
+                class="inline-block align-baseline font-bold text-blue-500 hover:text-blue-800"
+                href="https://github.com/Zaiddd/tracking-sdk" download>https://github.com/Zaiddd/tracking-sdk</a></li>
+
+            <li class="ms-10">Run the Middle : <br><br>
+            <code >
+
+                cd Middle <br/>
+
+                node serverjs 
+                                           </code>
+                <br><br>
+            </li>
             <li>Download the Tracker file <a
                 class="inline-block align-baseline font-bold text-blue-500 hover:text-blue-800"
                 href="/files/Tracker.js" download>here</a></li>
