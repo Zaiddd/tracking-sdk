@@ -75,13 +75,14 @@ Your data will be displayed on the dashboard in real time.
 
 
 
-## tu peux faire un test sur projet déja existe ( Tracker ) est  :
+## Faire un test sur projet déja existe ( Tracker )  :
 
-démarer le projet vue :
+Tu peux faire un teste sur projet existe déja ( dossier Tracker )
 
+Démarrer le projet vue :
 
 ```bash
-cd Dashboard
+cd Tracker
 npm i
 npm run dev
 ```
