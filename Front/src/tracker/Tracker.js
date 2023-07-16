@@ -221,24 +221,9 @@ function createUniqueId() {
 
 function saveUsedBrowser() {
 
-    let userAgent = navigator.userAgent;
-    let browserName;
+    
 
-    if (userAgent.match(/chrome|chromium|crios/i)) {
-        browserName = "chrome";
-    } else if (userAgent.match(/firefox|fxios/i)) {
-        browserName = "firefox";
-    } else if (userAgent.match(/safari/i)) {
-        browserName = "safari";
-    } else if (userAgent.match(/opr\//i)) {
-        browserName = "opera";
-    } else if (userAgent.match(/edg/i)) {
-        browserName = "edge";
-    } else {
-        browserName = "other/unknown";
-    }
-
-    fetch("http://localhost:3000/browser", {
+    fetch("http://localhost:3001/browser", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -246,7 +231,6 @@ function saveUsedBrowser() {
         },
         body: JSON.stringify({
             app_id: app_id,
-            browser: browserName,
             id_visitor: getVisitorId(),
             createdAt: new Date()
         }),
@@ -254,16 +238,8 @@ function saveUsedBrowser() {
 }
 
 function saveDevice() {
-    const ua = navigator.userAgent;
-    let device = "desktop";
-    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-        device = "tablet";
-    }
-    if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-        device = "mobile";
-    }
 
-    fetch("http://localhost:3000/device", {
+    fetch("http://localhost:3001/device", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -271,7 +247,6 @@ function saveDevice() {
         },
         body: JSON.stringify({
             app_id: app_id,
-            device: device,
             id_visitor: getVisitorId(),
             createdAt: new Date()
         }),
