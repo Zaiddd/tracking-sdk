@@ -3,7 +3,7 @@
 #  Getting Started
 
 ##  Run KPI service 
-démarer le service kpi : 
+Démarrer le service kpi : 
 
 ```bash
 docker compose up
@@ -11,7 +11,7 @@ docker compose up
 
 ## Installer et démarer le dashboard
 
-pour démarer le dashboard : 
+pour démarrer le dashboard : 
 
 ```bash
 cd Dashboard
