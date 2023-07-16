@@ -8,6 +8,11 @@ import "./css/style.css";
 
 const app = createApp(App);
 
+router.beforeEach((to, from) => {
+
+  if (to.fullPath == "/" ) router.push('/analytics/getting-started')
+
+});
 
 app.use(router);
 
